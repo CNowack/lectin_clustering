@@ -6,7 +6,7 @@ rule all:
 
 rule sequence_clustering:
     input:
-        fasta = "data/query.fasta"
+        query = "data/query.fasta"
     output:
         clusters = "results/clusters.tsv"
     conda:
