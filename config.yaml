@@ -1,2 +1,5 @@
 dataset: UniRef50
 testset:
+
+# SCC parameters
+threads: 4
