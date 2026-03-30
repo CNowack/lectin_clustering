@@ -2,8 +2,8 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        "results/clusters.tsv"
-
+        "results/network_nodes.csv",
+        "results/network_links.csv"
 
 # --- Download Test Set ---
 rule download_fasta:
@@ -40,6 +40,19 @@ rule sequence_clustering:
         # purge temp files
         rm -rf results/tmp_search
         """
+
+# --- Protein Community Detection ---
+rule detect_communities:
+    input:
+        tsv = "results/clusters.tsv"
+    output:
+        nodes = "results/network_nodes.csv",
+        links = "results/network_links.csv"
+    conda:
+        "envs/network.yaml"
+    script:
+        "scripts/community_detection.py"
+
 
 
 
