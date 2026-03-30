@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you utilize this pipeline, please cite the foundational research:"
+title: "Uncovering new families and folds in the natural protein universe"
+authors:
+  - family-names: "Durairaj"
+    given-names: "Janani"
+  - family-names: "Waterhouse"
+    given-names: "Andrew M."
+  - family-names: "Mets"
+    given-names: "Toomas"
+type: article
+doi: "10.1038/s41586-023-06622-3"
+url: "[https://doi.org/10.1038/s41586-023-06622-3](https://doi.org/10.1038/s41586-023-06622-3)"
+journal: "Nature"
+year: 2023

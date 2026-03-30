@@ -26,14 +26,21 @@ We are going to implement this methodology to locate and understand candidate gl
 # Execution:
 This pipeline runs using snakemake to connect the work of Durairaj et al. to the novel discovery of new proteins clusters based on a known protein with known function.
 
+## Protein Test Set for Pipeline Validation
+Sourced from UniProtKB, filtering by lectin famliy and review status: 
+    "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=(protein_name:lectin)+AND+(reviewed:true)"
 
-# AcknowReferences
+- Size and composition:
+    840 Lectin family proteins
+
+# Acknowledgements and References
 All base work was reproduced from Durairaj et al. 2023.
 
 "Uncovering new families and folds in the natural protein universe"
 
     Nature (2023). DOI: https://doi.org/10.1038/s41586-023-06622-3
 
+```bibtex
 @article{Durairaj2023,
   title={Uncovering new families and folds in the natural protein universe},
   author={Durairaj, Janani and Waterhouse, Andrew M. and Mets, Toomas and others},
@@ -43,6 +50,7 @@ All base work was reproduced from Durairaj et al. 2023.
   doi={10.1038/s41586-023-06622-3},
   url={[https://doi.org/10.1038/s41586-023-06622-3](https://doi.org/10.1038/s41586-023-06622-3)}
 }
+```
 
 ### Author's Code:
 * https://github.com/ProteinUniverseAtlas/dbuilder
