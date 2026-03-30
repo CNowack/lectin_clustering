@@ -1,0 +1,9 @@
+[submodule "external/dbuilder"]
+	path = external/dbuilder
+	url = https://github.com/ProteinUniverseAtlas/dbuilder.git
+[submodule "external/geometricus"]
+	path = external/geometricus
+	url = https://github.com/TurtleTools/geometricus.git
+[submodule "external/afdb90v4"]
+	path = external/afdb90v4
+	url = https://github.com/ProteinUniverseAtlas/AFDB90v4.git
