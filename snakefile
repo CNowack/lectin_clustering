@@ -2,7 +2,17 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        "results/seq_clustering.tsv"
+        "results/clusters.tsv"
+
+
+# --- Download Test Set ---
+rule download_fasta:
+    output:
+        fasta = "data/query.fasta"
+    shell:
+        """
+        wget -qO {output.fasta} "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=(protein_name:lectin)+AND+(reviewed:true)"
+        """
 
 rule sequence_clustering:
     input:
@@ -11,21 +21,26 @@ rule sequence_clustering:
         clusters = "results/clusters.tsv"
     conda:
         "envs/mmseqs2.yaml"
-    script:
+    threads: 4
+    resources:
+        # mem_mb=16000, # request 16GB RAM
+        # runtime="04:00:00" # max runtime of 4 hours
+    shell:
         """
         # Create a temporary directory for MMseqs2 calculations
         mkdir -p results/tmp_search
 
         # Execute search using parameters from the paper
-        mmseqs easy-search {input.query} {input.query} {output.results} results/tmp_search \
+        mmseqs easy-search {input.query} {input.query} {output.clusters} results/tmp_search \
             --threads {threads} \
             -e 1e-4 \
             -c 0.5 \
             --cov-mode 0
 
-        # Purge temporary files to maintain data sanctity
+        # purge temp files
         rm -rf results/tmp_search
         """
+
 
 
 
