@@ -2,18 +2,21 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        "results/network_nodes.csv",
-        "results/network_links.csv"
+        "results/map_nodes.csv",
+        "results/map_links.csv"
 
-# --- Download Test Set ---
-rule download_fasta:
+# --- Build Database ---
+rule download_database:
     output:
         fasta = "data/query.fasta"
+    params:
+        url = config["dataset"]
     shell:
         """
-        wget -qO {output.fasta} "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=(protein_name:lectin)+AND+(reviewed:true)"
+        wget -qO {output.fasta} {url}
         """
 
+# --- MMseq2 Clustering ---
 rule sequence_clustering:
     input:
         query = "data/query.fasta"
@@ -26,51 +29,77 @@ rule sequence_clustering:
         # mem_mb=16000, # request 16GB RAM
         # runtime="04:00:00" # max runtime of 4 hours
     shell:
-        """
         # Create a temporary directory for MMseqs2 calculations
-        mkdir -p results/tmp_search
-
         # Execute search using parameters from the paper
+        # purge temp files
+        """
+        mkdir -p results/tmp_search
         mmseqs easy-search {input.query} {input.query} {output.clusters} results/tmp_search \
             --threads {threads} \
             -e 1e-4 \
             -c 0.5 \
             --cov-mode 0
-
-        # purge temp files
         rm -rf results/tmp_search
         """
 
-# --- Protein Community Detection ---
-rule detect_communities:
+# Step 3A: Build the graph and run Asynchronous Label Propagation
+rule get_connected_components:
     input:
-        tsv = "results/clusters.tsv"
+        edges = "results/all_vs_all_alignment.tsv"
     output:
-        nodes = "results/network_nodes.csv",
-        links = "results/network_links.csv"
+        components = "results/connected_components.tsv",
+        communities = "results/communities.tsv"
     conda:
-        "envs/network.yaml"
-    script:
-        "scripts/community_detection.py"
+        "envs/afdb_graph_env.yaml"
+    threads: 8
+    shell:
+        """
+        python external/afdb90v4/scripts/get_connected_components.py \
+            --input {input.edges} \
+            --out_comp {output.components} \
+            --out_comm {output.communities} \
+            --threads {threads}
+        """
+# fake the metadata file normally generated from the MongoDB
+rule generate_local_metadata:
+    input: "data/test_lectins.fasta"
+    output: "data/protein_metadata.csv"
+    shell: "python scripts/generate_metadata.py {input} {output}"
 
+# Step 3B: Calculate the "Darkness" of each community
+rule summarize_communities:
+    input:
+        communities = "results/communities.tsv",
+        metadata = "data/protein_metadata.csv" # See the Accompanying Script below
+    output:
+        summary = "results/communities_summary.tsv"
+    conda:
+        "envs/afdb_graph_env.yaml"
+    shell:
+        """
+        python external/afdb90v4/scripts/get_communities_summary.py \
+            --communities {input.communities} \
+            --metadata {input.metadata} \
+            --output {output.summary}
+        """
 
-
-
-
-## Old project structure 
-### -- Identify structural homology search method (Foldseek/FoldTree).
-### -- Install and run corresponding software package.
-### -- Build initial version of the pipeline.
-### -- Run pipeline on a small subset of known lectins (positive controls).
-### -- Validate.
-### -- Define full scope of dataset (targeting specific folds like the OB-fold).
-### -- Build structural down-sampling method.
-### -- Run full pipeline.
-### -- Cluster by binding domain similarity.
-### -- Attempt to classify by tissue tropism and evolutionary relationship.
-
-## New project structure
-### -- Cluster UniRef50 using MMseqs2
-### -- Cluster Lectins using FoldSeek
-### -- Bridge neworks to indentify novel sequence clusters of lectins from structural homolog clusters
-### -- Attmept to assign tissure tropism
+# Step 3C: Format the data for the Cosmograph visualizer
+rule make_communities_map:
+    input:
+        edges = "results/all_vs_all_alignment.tsv",
+        communities = "results/communities.tsv",
+        summary = "results/communities_summary.tsv"
+    output:
+        nodes = "results/map_nodes.csv",
+        links = "results/map_links.csv"
+    conda:
+        "envs/afdb_graph_env.yaml"
+    shell:
+        """
+        python external/afdb90v4/scripts/make_communities_map.py \
+            --edges {input.edges} \
+            --communities {input.communities} \
+            --summary {input.summary} \
+            --out_nodes {output.nodes} \
+            --out_links {output.links}
+        """

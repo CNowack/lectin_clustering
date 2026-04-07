@@ -1,5 +1,5 @@
 # lectin_clustering
-A project to identify novel clusters of lectin binding proteins through structural homology clustering.
+A project to identify novel clusters of lectin binding proteins through structural outlier detection.
 
 ### Current Run Command
 ```bash
@@ -15,9 +15,11 @@ We are going to implement this methodology to locate and understand candidate gl
 * We can use this pipeline to discover entirely new lectins that sequence-based tools simply cannot see.
 
 ## Objectives
-1. Use a structural homology search to identify similar proteins in the AlphaFold database (starting from known glycan-binding fold families like the OB-fold).
-2. Extend the analysis by clustering the newly identified proteins according to their proposed binding specificities.
-3. Once we have those clusters, infer biological understanding of these sites using genus and tissue tropism.
+1. Cluster large sequence space using MMseqs2 and loose thresholds
+2. Identify cluster containing known lectin family proteins and gather surrounding superset
+3. Cluster superset by FoldTree
+4. Attempt to identify novel lectin or glycan binding proteins co-localized with known lectins
+5. Attempt to assign tropism to structural clusters
 
 ## Why This Is Interesting Regardless of Outcome
 * If the binding site is structurally conserved: This provides evidence that it is a functionally meaningful, ancestrally conserved feature—potentially relevant to how these proteins recognize specific sugars across different species.
@@ -28,6 +30,7 @@ This pipeline runs using snakemake to connect the work of Durairaj et al. to the
 
 ## Protein Test Set for Pipeline Validation
 Sourced from UniProtKB, filtering by lectin famliy and review status: 
+
     "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=(protein_name:lectin)+AND+(reviewed:true)"
 
 - Size and composition:
@@ -38,7 +41,7 @@ All base work was reproduced from Durairaj et al. 2023.
 
 "Uncovering new families and folds in the natural protein universe"
 
-    Nature (2023). DOI: https://doi.org/10.1038/s41586-023-06622-3
+Nature (2023). DOI: https://doi.org/10.1038/s41586-023-06622-3
 
 ```bibtex
 @article{Durairaj2023,

@@ -1,5 +1,5 @@
-dataset: UniRef50
-testset:
+# dataset
+dataset: "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=(taxonomy_id:2)+AND+(reviewed:true)"
 
 # SCC parameters
 threads: 4
