@@ -1,0 +1,5 @@
+channels:
+  - defaults
+dependencies:
+  - pandas
+  - scikit-learn
