@@ -20,7 +20,7 @@ import requests  # For HTTP requests; handles URL encoding automatically
 
 # The UniProt keyword accession. KW-0430 = "Lectin" (binds carbohydrates).
 # Set to None to omit the keyword filter.
-KEYWORD = "KW-0430"
+KEYWORD = None
 
 # Whether to restrict to reviewed (Swiss-Prot) entries only.
 # True  = curated entries only (small, high-quality set)
@@ -28,22 +28,28 @@ KEYWORD = "KW-0430"
 # None  = no filter on review status
 REVIEWED = False
 
-# NCBI taxonomy ID to restrict the search to a clade. Set to None to skip.
+# NCBI taxonomy ID(s) to restrict the search. Options:
+#   None        = no taxonomy filter
+#   2           = single clade (Bacteria)
+#   [2, 2157]   = multiple clades OR'd together (Bacteria + Archaea)
 # Common starting points:
 #   2       = Bacteria
-#   2157    = Archaea
-#   2759    = Eukaryota
-#   10239   = Viruses
-#   1224    = Proteobacteria (a bacterial phylum)
-#   33208   = Metazoa (animals)
-#   33090   = Viridiplantae (green plants)
-# Look up others at https://www.uniprot.org/taxonomy
-TAXONOMY_ID = 2
+#   1224    = Proteobacteria
+#   1236    = Gammaproteobacteria
+#   1239    = Bacillota/Firmicutes
+#   286     = Pseudomonas
+#   561     = Escherichia
+#   662     = Vibrio
+#   11906   = Burkholderia
+#   445     = Legionella
+#   1301    = Streptococcus
+#   1279    = Staphylococcus
+TAXONOMY_IDS = [91347]
 
 # Sequence length bracket [min, max] in residues. Set to None to skip.
 # Lectin domains typically fall in [80, 800]; tighten to [80, 400] for
 # single-domain architectures only.
-LENGTH_RANGE = [80, 800]
+LENGTH_RANGE = [100, 600]
 
 # Require an AlphaFold structural model to exist for the entry.
 # True  = only entries with models in AFDB (what Durairaj et al. need)
@@ -68,7 +74,7 @@ UNIPROT_SEARCH_URL = "https://rest.uniprot.org/uniprotkb/search"
 def build_query(
     keyword: str | None,
     reviewed: bool | None,
-    taxonomy_id: int | None,
+    taxonomy_ids: list[int] | None,
     length_range: list[int] | None,
     require_afdb: bool,
     pfam_families: list[str] | None,
@@ -91,10 +97,20 @@ def build_query(
         clauses.append("reviewed:false")
     # If reviewed is None, add no clause — both sets included.
 
-    if taxonomy_id is not None:
-        # `taxonomy_id:` restricts to a clade by NCBI tax ID. The filter is
-        # inclusive of descendants — taxonomy_id:2 catches all Bacteria.
-        clauses.append(f"taxonomy_id:{taxonomy_id}")
+    if taxonomy_ids is not None:
+        # Accept either a single int or a list of ints. Normalize to a list
+        # so the same code handles both.
+        if isinstance(taxonomy_ids, int):
+            taxonomy_ids = [taxonomy_ids]
+
+        if len(taxonomy_ids) == 1:
+            # Single clade — no parentheses needed.
+            clauses.append(f"taxonomy_id:{taxonomy_ids[0]}")
+        else:
+            # Multiple clades — OR them together, wrap in parens so the OR
+            # doesn't spill out and combine with sibling AND clauses.
+            tax_clause = " OR ".join(f"taxonomy_id:{t}" for t in taxonomy_ids)
+            clauses.append(f"({tax_clause})")
 
     if length_range:
         lo, hi = length_range
@@ -147,7 +163,7 @@ def main() -> None:
     query = build_query(
         keyword=KEYWORD,
         reviewed=REVIEWED,
-        taxonomy_id=TAXONOMY_ID,
+        taxonomy_ids=TAXONOMY_IDS,
         length_range=LENGTH_RANGE,
         require_afdb=REQUIRE_AFDB,
         pfam_families=PFAM_FAMILIES,
