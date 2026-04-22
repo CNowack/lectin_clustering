@@ -7,14 +7,12 @@ rule all:
 
 # --- Build Database ---
 rule download_database:
-    output:
-        fasta = "data/query.fasta"
-    params:
-        url = config["dataset"]
-    shell:
-        """
-        wget -qO {output.fasta} {url}
-        """
+    output: 
+        directory("data/batches/")
+    params: 
+        query = config["dataset_query"], prefix = "lectins"
+    shell: 
+        "python scripts/batch_download.py {params.query:q} {output} {params.prefix}"
 
 # --- MMseq2 Clustering ---
 rule sequence_clustering:
