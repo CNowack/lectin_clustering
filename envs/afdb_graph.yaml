@@ -2,9 +2,9 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - networkx=2.5.1  # The specific version cited in their methodology
+  - python=3.10
+  - networkx>=3.0
   - pandas
   - numpy
   - scipy
-  - python-louvain  # Often required for community detection algorithms
+  - python-louvain

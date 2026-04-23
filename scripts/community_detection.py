@@ -2,6 +2,10 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 from networkx.algorithms.community import asyn_lpa_communities
+import random
+
+# set random seed
+random.seed(42)
 
 # Snakemake passes these variables automatically
 input_tsv = snakemake.input.tsv
@@ -10,7 +14,7 @@ links_out = snakemake.output.links
 
 # Load the MMseqs2 easy-search default format
 columns = [
-    "query", "target", "pident", "alnlen", "mismatch", "gapopen", 
+    "query", "target", "pident", "alnlen", "mismatch", "gapopen",
     "qstart", "qend", "tstart", "tend", "evalue", "bitscore"
 ]
 df = pd.read_csv(input_tsv, sep='\t', names=columns)
@@ -18,7 +22,7 @@ df = pd.read_csv(input_tsv, sep='\t', names=columns)
 # Remove self-alignments (a node linking to itself distorts the visualization layout)
 df = df[df['query'] != df['target']]
 
-# Calculate edge weights proportional to E-value. 
+# Calculate edge weights proportional to E-value.
 # We use -log10(evalue). We must handle E-values of 0.0 to prevent infinite weights.
 min_evalue = df[df['evalue'] > 0]['evalue'].min()
 if pd.isna(min_evalue):
@@ -29,8 +33,8 @@ df['weight'] = -np.log10(df['evalue'])
 # Construct the undirected graph
 G = nx.from_pandas_edgelist(df, source='query', target='target', edge_attr='weight')
 
-# Execute Asynchronous Label Propagation
-communities = asyn_lpa_communities(G, weight='weight')
+# Execute Asynchronous Label Propagation (with seed for reproducibility)
+communities = asyn_lpa_communities(G, weight='weight', seed=42)
 
 # Map each protein to its detected community
 node_mapping = []

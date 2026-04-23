@@ -1,5 +1,13 @@
-# dataset
-dataset: "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=(taxonomy_id:2)+AND+(reviewed:true)"
+# lectin set
+lectin_set: "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=(taxonomy_id:2)+AND+(reviewed:true)"
+
+# Fasta file of sequences to run
+input_fasta: "data/query.fasta"
+  # "data/query_test2k.fasta"
+
+# MMseqs2 Parameters
+mmseqs_evalue: 1e-4
+mmseqs_coverage: 0.5
 
 # SCC parameters
-threads: 4
+threads: 16
