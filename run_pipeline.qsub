@@ -2,12 +2,13 @@
 
 #$ -P ds596
 #$ -N lectin_51k
-#$ -l h_rt=6:00:00        # 6 hours — generous buffer
-#$ -pe omp 16             # 16 cores on one node
-#$ -l mem_per_core=4G     # 64 GB total, plenty for this size
-#$ -l avx2                # must have for MMseqs2
+#$ -l h_rt=6:00:00
+#$ -pe omp 16
+#$ -l mem_per_core=4G
+#$ -l avx2
 #$ -j y
-#$ -o logs/pipeline_51k_$JOB_ID.log
+#$ -wd /projectnb/ds596/projects/Team_2/lectin_clustering
+#$ -o /projectnb/ds596/projects/Team_2/lectin_clustering/logs/pipeline_$JOB_ID.log
 #$ -m ea
 
 echo "=========================================="
@@ -17,6 +18,7 @@ echo "Cores:     $NSLOTS"
 echo "Start:     $(date)"
 echo "=========================================="
 
+cd /projectnb/ds596/projects/Team_2/lectin_clustering
 module load miniconda
 conda activate snakemake
 mkdir -p logs
@@ -25,7 +27,7 @@ time snakemake \
     --cores $NSLOTS \
     --use-conda \
     --rerun-incomplete \
-    --stats results/pipeline_stats_51k.json \
+    --stats /projectnb/ds596/projects/Team_2/lectin_clustering/results/pipeline_stats_51k.json \
     -s snakefile
 
 echo "=========================================="
