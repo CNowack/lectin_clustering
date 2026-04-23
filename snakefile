@@ -11,6 +11,8 @@ rule sequence_clustering:
         query = config["input_fasta"]
     output:
         clusters = "results/clusters.tsv"
+    benchmark:
+        "results/benchmarks/sequence_clustering.tsv"
     conda:
         "envs/mmseqs2.yaml"
     threads: config["threads"]
@@ -37,6 +39,8 @@ rule community_detection:
     output:
         nodes = "results/map_nodes.csv",
         links = "results/map_links.csv"
+    benchmark:
+        "results/benchmarks/community_detection.tsv"
     conda:
         "envs/afdb_graph.yaml"
     script:

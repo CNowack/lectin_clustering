@@ -27,7 +27,6 @@ time snakemake \
     --cores $NSLOTS \
     --use-conda \
     --rerun-incomplete \
-    --stats /projectnb/ds596/projects/Team_2/lectin_clustering/results/pipeline_stats_51k.json \
     -s snakefile
 
 echo "=========================================="
