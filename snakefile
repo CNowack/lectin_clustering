@@ -16,9 +16,6 @@ rule sequence_clustering:
     conda:
         "envs/mmseqs2.yaml"
     threads: config["threads"]
-    resources:
-        # mem_mb=16000, # request 16GB RAM
-        # runtime="04:00:00" # max runtime of 4 hours
     shell:
         # Create a temporary directory for MMseqs2 calculations
         # Execute search using parameters from the paper
