@@ -12,3 +12,25 @@ mmseqs_coverage: 0.5
 # SCC parameters
 threads: min(36, workflow.cores) # assigns each rule a lower number if smaller node is requested
 
+# --- Select Lectin Clusters Parameters---
+
+# Minimum fraction of lectin-labeled members required to call a community
+# a "known lectin cluster". 1.0 = pure lectin clusters only.
+min_lectin_fraction: 1.0
+
+# Minimum number of distinct known lectin clusters a candidate must bridge.
+# 1 = any unknown linked to a known lectin cluster at threshold strength.
+# 2 = paper-style "unifies multiple families".
+min_bridge_count: 1
+
+# Multiplier on each cluster's median within-cluster edge weight to set its
+# admission threshold. 1.0 = exactly median (paper). >1.0 = stricter (require
+# stronger-than-median similarity). <1.0 = more permissive.
+weight_strictness_multiplier: 1.0
+
+# Label that identifies known lectins in the nodes 'category' column.
+lectin_category_label: "lectin"
+
+# Minimum size of a community to be considered a "known lectin cluster".
+# Clusters of 1-2 members have no meaningful internal median.
+min_known_cluster_size: 3

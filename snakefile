@@ -71,7 +71,7 @@ rule sequence_clustering:
         rm -rf results/tmp_search
         """
 
-# --- Detect Clusters ---
+# --- Detect Sequence Clusters ---
 rule community_detection:
     input:
         tsv = "results/all_vs_all_alignment.tsv"
@@ -85,11 +85,13 @@ rule community_detection:
     script:
         "scripts/community_detection.py"
 
+
 # --- Sequence Cosmograph ---
 rule seq_cosmograph:
     input:
-        nodes = "results/clusters/seq_nodes.csv"
+        nodes = "results/clusters/seq_nodes.csv",
         links = "results/clusters/seq_links.csv"
+    params:
         project = "sequence_clusters"
     output:
         graph = "results/cosmograph/seq_clusters.done"
@@ -100,17 +102,24 @@ rule seq_cosmograph:
     script:
         "scripts/seq_cosmograph.py"
 
+# ====================================================================== #
+#  <> Extenstion Section <>                                              #
+# ====================================================================== #
+
 # --- Select Lectin Clusters ---
 rule select_clusters:
     input:
-        nodes = "results/clusters/seq_nodes.csv"
+        nodes = "results/clusters/seq_nodes.csv",
         links = "results/clusters/seq_links.csv"
     output:
         target_seq_clusters = "results/clusters/target_seq_clusters.csv"
+        summary = "results/clusters/select_clusters_summary.txt"
     conda:
         "envs/base.yaml"
     script:
         "scripts/select_seq_clusters.py"
+
+# --- Fetch Structures? unclear if this step is needed ---
 
 # --- FoldTree Structural Clustering ---
 
@@ -123,11 +132,11 @@ rule structural_clustering:
         data = "results/foldtree/structure_alignment.tsv"
     conda:
         "envs/foldtree.yaml"
-    script:
-        "scripts/cluster_by_structure.py"
+    benchmark:
+        "results/benchmarks/structural_clustering.tsv"
     shell:
         """
-        foldtree
+        insert foldtree bash command here
         """
 
 # --- Detect Structural Clusters ---
@@ -135,7 +144,7 @@ rule detect_structure_clusters:
     input:
         data = "results/foldtree/structure_alignment.csv"
     output:
-        nodes = "results/clusters/structure_nodes.csv"
+        nodes = "results/clusters/structure_nodes.csv",
         links = "results/clusters/structure_links.csv"
     benchmark:
         "results/benchmarks/detect_structure_clusters.tsv"
@@ -148,8 +157,9 @@ rule detect_structure_clusters:
 # --- Structure Cosmograph ---
 rule structure_cosmograph:
     input:
-        nodes = "results/clusters/structure_nodes.csv"
+        nodes = "results/clusters/structure_nodes.csv",
         links = "results/clusters/structure_links.csv"
+    params:
         project = "structure_clusters"
     output:
         graph = "results/cosmograph/structure_clusters.done"

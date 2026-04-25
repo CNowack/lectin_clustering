@@ -8,14 +8,14 @@ set_api_key(cosmo_api_key)
 
 # snakemake inputs
 nodes = snakemake.input.nodes
-links = snakemale.input.links
+links = snakemake.input.links
 graph = snakemake.output.graph
-cosmo_project = snakemake.input.project
+cosmo_project = snakemake.params.project
 
 points = pd.read_csv(nodes)
 links = pd.read_csv(links)
 
-# Nodes csv has headers:    'id', 'connected_component_id', 'community_group', 'category', 'type'
+# Nodes csv has headers:    'id', 'connected_component_id', 'community_group', 'source_set', 'subset'
 # Example row:              dark_xantho_tr|A0AAJ6H1K8|A0AAJ6H1K8_9XANT,0,0,dark,xantho
 
 # Links csv has headers:    'source', 'target', 'weight'
@@ -35,9 +35,9 @@ g = cosmo(
     # point_include_columns=['glycan_specificity', 'organism', 'pdb_id'] need to add columns
 )
 
-project_id = widget.export_project_by_name("sequence_clusters")
+project_id = g.export_project_by_name("sequence_clusters")
 print(f"Project exported! View and download PNG here: https://run.cosmograph.app/project/{project_id}")
 
 
 # create a dummy output file to force snakemake to check if the script runs correctly
-seq_cluster.done
+open(graph, 'w').close()

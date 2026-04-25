@@ -24,14 +24,11 @@ Run as a Snakemake script via:
         script: "scripts/community_detection.py"
 """
 
-import random
 import pandas as pd
 import numpy as np
 import networkx as nx
 from networkx.algorithms.community import asyn_lpa_communities
 
-# Reproducibility — async LPA's neighbor-update order is randomized.
-random.seed(42)
 
 # Snakemake injects these when the rule fires.
 input_tsv = snakemake.input.tsv
@@ -174,8 +171,7 @@ nodes_df = pd.DataFrame(node_records)
 
 # parse node 'id' str to build other data columns for further analysis
 # use most efficient method, list comprehension, and only once
-split_id = [x.split('_', 2)[:2] for x in nodes_df['id']]
-nodes_df[['category', 'type']] = pd.DataFrame(split_id, index=nodes.index)
+nodes_df[['source_set', 'subset']] = nodes_df['id'].str.split('_', n=2, expand=True).iloc[:, :2]
 
 nodes_df.to_csv(nodes_out, index=False)
 
