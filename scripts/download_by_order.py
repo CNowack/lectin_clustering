@@ -26,21 +26,40 @@ from pathlib import Path
 
 # Each entry: (output filename stem, NCBI taxonomy ID, human-readable label)
 # These are the major orders within Gammaproteobacteria (class 1236).
-SUBSETS = [
-    ("enterobacterales",   91347,  "Enterobacterales"),
-    ("pseudomonadales",    72274,  "Pseudomonadales"),
-    ("vibrionales",       135623,  "Vibrionales"),
-    ("alteromonadales",   135622,  "Alteromonadales"),
-    ("oceanospirillales", 135619,  "Oceanospirillales"),
-    ("legionellales",     118969,  "Legionellales"),
-    ("xanthomonadales",   135614,  "Xanthomonadales"),
-    ("thiotrichales",     72273,   "Thiotrichales"),
-    ("chromatiales",      135613,  "Chromatiales"),
-    ("aeromonadales",     135624,  "Aeromonadales"),
-    ("pasteurellales",    135625,  "Pasteurellales"),
-]
+# SUBSETS = [
+#     ("enterobacterales",   91347,  "Enterobacterales"),
+#     ("pseudomonadales",    72274,  "Pseudomonadales"),
+#     ("vibrionales",       135623,  "Vibrionales"),
+#     ("alteromonadales",   135622,  "Alteromonadales"),
+#     ("oceanospirillales", 135619,  "Oceanospirillales"),
+#     ("legionellales",     118969,  "Legionellales"),
+#     ("xanthomonadales",   135614,  "Xanthomonadales"), # now named Lysobacterales
+#     ("thiotrichales",     72273,   "Thiotrichales"),
+#     ("chromatiales",      135613,  "Chromatiales"),
+#     ("aeromonadales",     135624,  "Aeromonadales"),
+#     ("pasteurellales",    135625,  "Pasteurellales"),
+# ]
 
 # Possible expansion to include all Proteobacteria
+
+SUBSETS = [
+    ("acidithiobacillia",      1807140, "Acidithiobacillia"),
+    ("alphaproteobacteria",    28211,   "Alphaproteobacteria"),
+    ("betaproteobacteria",     28216,   "Betaproteobacteria"),
+#   ("gammaproteobacteria",    1236,    "Gammaproteobacteria"), # already downloaded
+    ("deltaproteobacteria",    32066,   "Deltaproteobacteria"),
+    ("epsilonproteobacteria",  29547,   "Epsilonproteobacteria"),
+    ("zetaproteobacteria",     580370,  "Zetaproteobacteria"),
+    ("lambdaproteobacteria",   1817794, "Lamndaproteobacteria"),
+    ("muproteobacteria",       1817795, "Muproteobacteria"),
+    ("incertae_sedis",         32045,   "Pseudomonadota_incertae_sedis"),
+    ("acidithiobacillia",      1774301, "Acidithiobacillia"),
+    ("oligoflexia",            1530704, "Oligoflexia"),
+    ("hydrogenophilalia",      2008785, "Hydrogenophilalia"),
+    ("magnetococcia",          3118669, "Magnetococcia"),
+    ("unclassified",           81684,   "Unclassified"),
+    ("environmental",          47936,   "Environmental")
+]
 
 
 # Path to your per-query download script. This driver shells out to it once
