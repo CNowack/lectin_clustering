@@ -50,7 +50,7 @@ All *dark* sequences were download and compiled into a single database `fasta.gz
 
 190563      - Not Reviewed Lectins (lectin_nr)
 
-12735307    - Unreveiwed *"dark proteins"* (dark_<class prefix>)
+12543904    - Unreveiwed *"dark proteins"* (dark_<class prefix>)
 
     aeromonadales:         "dark_aero"
     alteromonadales:       "dark_altero"

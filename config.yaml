@@ -10,4 +10,5 @@ mmseqs_evalue: 1e-4
 mmseqs_coverage: 0.5
 
 # SCC parameters
-threads: 36
+threads: min(36, workflow.cores) # assigns each rule a lower number if smaller node is requested
+

@@ -5,5 +5,4 @@ dependencies:
   - python=3.10
   - pandas
   - networkx
-<<<<<<< HEAD
   - numpy<2.0

@@ -71,15 +71,91 @@ rule sequence_clustering:
         rm -rf results/tmp_search
         """
 
+# --- Detect Clusters ---
 rule community_detection:
     input:
         tsv = "results/all_vs_all_alignment.tsv"
     output:
-        nodes = "results/map_nodes.csv",
-        links = "results/map_links.csv"
+        nodes = "results/clusters/seq_nodes.csv",
+        links = "results/clusters/seq_links.csv"
     benchmark:
         "results/benchmarks/community_detection.tsv"
     conda:
         "envs/afdb_graph.yaml"
     script:
         "scripts/community_detection.py"
+
+# --- Sequence Cosmograph ---
+rule seq_cosmograph:
+    input:
+        nodes = "results/clusters/seq_nodes.csv"
+        links = "results/clusters/seq_links.csv"
+        project = "sequence_clusters"
+    output:
+        graph = "results/cosmograph/seq_clusters.done"
+    benchmark:
+        "results/benchmarks/seq_cosmopgraph.tsv"
+    conda:
+        "envs/cosmo.yaml"
+    script:
+        "scripts/seq_cosmograph.py"
+
+# --- Select Lectin Clusters ---
+rule select_clusters:
+    input:
+        nodes = "results/clusters/seq_nodes.csv"
+        links = "results/clusters/seq_links.csv"
+    output:
+        target_seq_clusters = "results/clusters/target_seq_clusters.csv"
+    conda:
+        "envs/base.yaml"
+    script:
+        "scripts/select_seq_clusters.py"
+
+# --- FoldTree Structural Clustering ---
+
+# need to downweight the sequence similarity parameter
+
+rule structural_clustering:
+    input:
+        target_seq_clusters = "results/clusters/target_seq_clusters.csv"
+    output:
+        data = "results/foldtree/structure_alignment.tsv"
+    conda:
+        "envs/foldtree.yaml"
+    script:
+        "scripts/cluster_by_structure.py"
+    shell:
+        """
+        foldtree
+        """
+
+# --- Detect Structural Clusters ---
+rule detect_structure_clusters:
+    input:
+        data = "results/foldtree/structure_alignment.csv"
+    output:
+        nodes = "results/clusters/structure_nodes.csv"
+        links = "results/clusters/structure_links.csv"
+    benchmark:
+        "results/benchmarks/detect_structure_clusters.tsv"
+    conda:
+        "envs/afdb_graph.yaml"
+    script:
+        "scripts/structure_clusters.py"
+
+
+# --- Structure Cosmograph ---
+rule structure_cosmograph:
+    input:
+        nodes = "results/clusters/structure_nodes.csv"
+        links = "results/clusters/structure_links.csv"
+        project = "structure_clusters"
+    output:
+        graph = "results/cosmograph/structure_clusters.done"
+    conda:
+        "envs/cosmo.yaml"
+    benchmark:
+        "results/benchmarks/structure_cosmograph.tsv"
+    script:
+        "scripts/structure_cosmograph.py"
