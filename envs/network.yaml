@@ -7,6 +7,3 @@ dependencies:
   - networkx
 <<<<<<< HEAD
   - numpy<2.0
-=======
-  - numpy
->>>>>>> checkin

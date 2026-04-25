@@ -36,6 +36,58 @@ Sourced from UniProtKB, filtering by lectin famliy and review status:
 - Size and composition:
     840 Lectin family proteins
 
+## Full sequence dataset
+**All sequences sourced from UniProtKB using** `download_by_order.py` driven by `batch_download_2.py` to split the 12,735,307 protein sequences within the Proteobacteria class Gammaproteobacteria into groups by taxonomic order to facilitate downloading.
+### Parameters
+* `REVIEWED = False` - include unreviewed TrEMBL entries
+* `TAXONOMY = [1224]` - NCBI taxonomy filter for Proteobacteria phylum
+* `LENGTH_RANGE = [100, 600]` - Restrict AA length
+* `REQUIRE_AFDB = True ` - Make sure each entry has a Alphafold-predicted structure for FoldTree
+
+All *dark* sequences were download and compiled into a single database `fasta.gz` by `tag_concat.py` that labels each order in the fasta header. This step was repeated for both categories of the lectin sequences. Once the *dark* sequences are collapsed into representative seqeunces (`rule representative_clustering`) the lectins are concatenated to the output (`rule add_controls`) to preserve all controls. The resulting sequence set is passed to the MMseqs2 sequence clustering step.
+
+840         - Reviewed Lectins (lectin_rev)
+
+190563      - Not Reviewed Lectins (lectin_nr)
+
+12735307    - Unreveiwed *"dark proteins"* (dark_<class prefix>)
+
+    aeromonadales:         "dark_aero"
+    alteromonadales:       "dark_altero"
+    chromatiales:          "dark_chroma"
+    enterobacterales:      "dark_entero"
+    legionellales:         "dark_legion"
+    oceanospirillales:     "dark_oceano"
+    pasteurellales:        "dark_pasteur"
+    pseudomonadales:       "dark_pseudo"
+    thiotrichales:         "dark_thio"
+    vibrionales:           "dark_vibrio"
+    xanthomonadales:       "dark_xantho"
+
+**= 12,735,307  - Total sequences input**
+
+    Wrote 12,735,307 sequences to data/query.fasta.gz
+        size on disk: 2528.6 MB
+
+    Per-file counts:
+           840  data/lectins.fasta
+       190,563  data/lectins_nr.fasta
+       217,155  data/by_order/aeromonadales.fasta.gz
+       788,265  data/by_order/alteromonadales.fasta.gz
+       285,426  data/by_order/chromatiales.fasta.gz
+     5,053,590  data/by_order/enterobacterales.fasta.gz
+       185,603  data/by_order/legionellales.fasta.gz
+       671,808  data/by_order/oceanospirillales.fasta.gz
+       295,444  data/by_order/pasteurellales.fasta.gz
+     3,091,323  data/by_order/pseudomonadales.fasta.gz
+       161,711  data/by_order/thiotrichales.fasta.gz
+       966,591  data/by_order/vibrionales.fasta.gz
+       826,988  data/by_order/xanthomonadales.fasta.gz
+
+### Future Dataset Expansions
+
+Expand to whole Proteobacteria phylum (26,181,537 protein sequences), NCBI ID: 1224
+
 # Acknowledgements and References
 All base work was reproduced from Durairaj et al. 2023.
 

@@ -44,7 +44,7 @@ REVIEWED = False
 #   445     = Legionella
 #   1301    = Streptococcus
 #   1279    = Staphylococcus
-TAXONOMY_IDS = [91347]
+TAXONOMY_IDS = [1224]
 
 # Sequence length bracket [min, max] in residues. Set to None to skip.
 # Lectin domains typically fall in [80, 800]; tighten to [80, 400] for

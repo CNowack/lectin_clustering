@@ -40,6 +40,9 @@ SUBSETS = [
     ("pasteurellales",    135625,  "Pasteurellales"),
 ]
 
+# Possible expansion to include all Proteobacteria
+
+
 # Path to your per-query download script. This driver shells out to it once
 # per subset, overriding TAXONOMY_IDS via a small wrapper below.
 DOWNLOAD_SCRIPT = Path(__file__).parent / "batch_download_2.py"

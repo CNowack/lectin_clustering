@@ -1,10 +1,10 @@
 #!/bin/bash -l
 
 #$ -P ds596
-#$ -N lectin_51k
-#$ -l h_rt=6:00:00
-#$ -pe omp 16
-#$ -l mem_per_core=4G
+#$ -N Gamma12.7M
+#$ -l h_rt=36:00:00
+#$ -pe omp 36
+#$ -l mem_per_core=8G
 #$ -l avx2
 #$ -j y
 #$ -wd /projectnb/ds596/projects/Team_2/lectin_clustering
