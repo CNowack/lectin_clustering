@@ -10,7 +10,11 @@ mmseqs_evalue: 1e-4
 mmseqs_coverage: 0.5
 
 # SCC parameters
-threads: min(36, workflow.cores) # assigns each rule a lower number if smaller node is requested
+max_threads: 36
+threads: 16
+
+# this doesn't work
+# min(config["max_threads"], workflow.cores) # assigns each rule a lower number if smaller node is requested
 
 # --- Select Lectin Clusters Parameters---
 

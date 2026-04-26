@@ -12,7 +12,7 @@ links = snakemake.input.links
 graph = snakemake.output.graph
 cosmo_project = snakemake.params.project
 
-points = pd.read_csv(nodes)
+nodes = pd.read_csv(nodes)
 links = pd.read_csv(links)
 
 # Nodes csv has headers:    'id', 'connected_component_id', 'community_group', 'source_set', 'subset'
@@ -22,17 +22,16 @@ links = pd.read_csv(links)
 # Example row:              lectin_nr_tr|B9GAY9|B9GAY9_ORYSJ,lectin_nr_tr|I1R0K4|I1R0K4_ORYGL,323.3062153431158
 
 g = cosmo(
-    points = points,
+    points = nodes,
     links = links,
     point_id_by = 'id',
     point_label_by = 'id',
-    point_color_by = 'category',
-    point_shape_by = 'type',
+    point_color_by = 'source_set',
     link_source_by = 'source',
     link_target_by = 'target',
     link_strength_by = 'weight',
     # enhancements
-    # point_include_columns=['glycan_specificity', 'organism', 'pdb_id'] need to add columns
+    point_include_columns=['subset', 'connected_component_id']
 )
 
 project_id = g.export_project_by_name("sequence_clusters")

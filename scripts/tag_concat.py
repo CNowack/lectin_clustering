@@ -36,21 +36,38 @@ INPUTS = {
     # "data/lectins_rev.fasta":      "lectin_rev",
     # "data/lectins_nr.fasta":    "lectin_nr",
 
-    # Dark pool — by Proteobacteria class
-    "data/by_order/aeromonadales.fasta.gz":         "dark_aero",
-    "data/by_order/alteromonadales.fasta.gz":       "dark_altero",
-    "data/by_order/chromatiales.fasta.gz":          "dark_chroma",
-    "data/by_order/enterobacterales.fasta.gz":      "dark_entero",
-    "data/by_order/legionellales.fasta.gz":         "dark_legion",
-    "data/by_order/oceanospirillales.fasta.gz":     "dark_oceano",
-    "data/by_order/pasteurellales.fasta.gz":        "dark_pasteur",
-    "data/by_order/pseudomonadales.fasta.gz":       "dark_pseudo",
-    "data/by_order/thiotrichales.fasta.gz":         "dark_thio",
-    "data/by_order/vibrionales.fasta.gz":           "dark_vibrio",
-    "data/by_order/xanthomonadales.fasta.gz":       "dark_xantho",
+    # Dark pool — by Gammaproteobacteria order
+    # "data/by_order/aeromonadales.fasta.gz":         "dark_aero",
+    # "data/by_order/alteromonadales.fasta.gz":       "dark_altero",
+    # "data/by_order/chromatiales.fasta.gz":          "dark_chroma",
+    # "data/by_order/enterobacterales.fasta.gz":      "dark_entero",
+    # "data/by_order/legionellales.fasta.gz":         "dark_legion",
+    # "data/by_order/oceanospirillales.fasta.gz":     "dark_oceano",
+    # "data/by_order/pasteurellales.fasta.gz":        "dark_pasteur",
+    # "data/by_order/pseudomonadales.fasta.gz":       "dark_pseudo",
+    # "data/by_order/thiotrichales.fasta.gz":         "dark_thio",
+    # "data/by_order/vibrionales.fasta.gz":           "dark_vibrio",
+    # "data/by_order/xanthomonadales.fasta.gz":       "dark_xantho",
+
+    # Dark pool - Extended - All other Proteobacteria classes
+    "data/proteobacteria/acidithiobacillia.fasta.gz":           "dark_p-acidi",
+    "data/proteobacteria/alphaproteobacteria.fasta.gz":         "dark_p-alpha",
+    "data/proteobacteria/betaproteobacteria.fasta.gz":          "dark_p-beta",
+    "data/proteobacteria/deltaproteobacteria.fasta.gz":         "dark_p-delta",
+    "data/proteobacteria/environmental.fasta.gz":               "dark_p-env",
+    "data/proteobacteria/epsilonproteobacteria.fasta.gz":       "dark_p-epsilon",
+    "data/proteobacteria/hydrogenophilalia.fasta.gz":           "dark_p-hydro",
+    "data/proteobacteria/incertae_sedis.fasta.gz":              "dark_p-incertae",
+    "data/proteobacteria/lambdaproteobacteria.fasta.gz":        "dark_p-lambda",
+    "data/proteobacteria/magnetococcia.fasta.gz":               "dark_p-magneto",
+    "data/proteobacteria/muproteobacteria.fasta.gz":            "dark_p-mu",
+    "data/proteobacteria/oligoflexia.fasta.gz":                 "dark_p-oligo",
+    "data/proteobacteria/unclassified.fasta.gz":                "dark_p-unclass",
+    "data/proteobacteria/zetaproteobacteria.fasta.gz":          "dark_p-zeta"
+
 }
 
-OUTPUT_PATH = "data/input_query.fasta.gz"
+OUTPUT_PATH = "data/proteo_query.fasta.gz"
 
 
 # =============================================================================

@@ -35,13 +35,13 @@ from pathlib import Path
 
 # Tagged & concatenated lectin file (produced by the tagging script).
 # Headers look like: >lectin_rev_tr|A0A1V1IGJ0|A0A1V1IGJ0_ECOLI ...
-LECTIN_FASTA = "data/lectins.fasta.gz"
+LECTIN_FASTA = "data//lectins/lectins.fasta.gz"
 
 # Tagged & concatenated dark file. Headers like: >dark_gamma_tr|XXXXXX|... ...
-DARK_FASTA = "data/input_query.fasta.gz"
+DARK_FASTA = "data/proteobacteria/proteo_query.fasta.gz"
 
 # Output: dark file with lectin accessions removed.
-OUTPUT_FASTA = "data/input_query_dedup.fasta.gz"
+OUTPUT_FASTA = "data/proteo_query_dedup.fasta.gz"
 
 
 # =============================================================================

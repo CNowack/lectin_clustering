@@ -64,8 +64,6 @@ All *dark* sequences were download and compiled into a single database `fasta.gz
     vibrionales:           "dark_vibrio"
     xanthomonadales:       "dark_xantho"
 
-**= 12,735,307  - Total sequences input**
-
     Wrote 12,735,307 sequences to data/query.fasta.gz
         size on disk: 2528.6 MB
 
@@ -84,9 +82,70 @@ All *dark* sequences were download and compiled into a single database `fasta.gz
        966,591  data/by_order/vibrionales.fasta.gz
        826,988  data/by_order/xanthomonadales.fasta.gz
 
-### Future Dataset Expansions
+Duplicate Lectins removed: 
+
+**= 12,542,692  - Total Gammaproteobacteria sequences**
+
+### Future Dataset Expansions (all of Proteobacteria)
 
 Expand to whole Proteobacteria phylum (26,181,537 protein sequences), NCBI ID: 1224
+
+    "data/proteobacteria/acidithiobacillia.fasta.gz":           "dark_p-acidi",
+    "data/proteobacteria/alphaproteobacteria.fasta.gz":         "dark_p-alpha",
+    "data/proteobacteria/betaproteobacteria.fasta.gz":          "dark_p-beta",
+    "data/proteobacteria/deltaproteobacteria.fasta.gz":         "dark_p-delta",
+    "data/proteobacteria/environmental.fasta.gz":               "dark_p-env",
+    "data/proteobacteria/epsilonproteobacteria.fasta.gz":       "dark_p-epsilon",
+    "data/proteobacteria/hydrogenophilalia.fasta.gz":           "dark_p-hydro",
+    "data/proteobacteria/incertae_sedis.fasta.gz":              "dark_p-incertae",
+    "data/proteobacteria/lambdaproteobacteria.fasta.gz":        "dark_p-lambda",
+    "data/proteobacteria/magnetococcia.fasta.gz":               "dark_p-magneto",
+    "data/proteobacteria/muproteobacteria.fasta.gz":            "dark_p-mu",
+    "data/proteobacteria/oligoflexia.fasta.gz":                 "dark_p-oligo",
+    "data/proteobacteria/unclassified.fasta.gz":                "dark_p-unclass",
+    "data/proteobacteria/zetaproteobacteria.fasta.gz":          "dark_p-zeta"
+
+Wrote 13,116,527 sequences to data/proteo_query.fasta.gz
+  size on disk: 2659.0 MB
+
+Per-file counts:
+        48,590  data/proteobacteria/acidithiobacillia.fasta.gz
+     7,802,211  data/proteobacteria/alphaproteobacteria.fasta.gz
+     4,432,690  data/proteobacteria/betaproteobacteria.fasta.gz
+       164,370  data/proteobacteria/deltaproteobacteria.fasta.gz
+         1,462  data/proteobacteria/environmental.fasta.gz
+       621,554  data/proteobacteria/epsilonproteobacteria.fasta.gz
+         6,172  data/proteobacteria/hydrogenophilalia.fasta.gz
+            68  data/proteobacteria/incertae_sedis.fasta.gz
+         4,343  data/proteobacteria/lambdaproteobacteria.fasta.gz
+         8,598  data/proteobacteria/magnetococcia.fasta.gz
+        11,656  data/proteobacteria/muproteobacteria.fasta.gz
+             1  data/proteobacteria/oligoflexia.fasta.gz
+         4,755  data/proteobacteria/unclassified.fasta.gz
+        10,057  data/proteobacteria/zetaproteobacteria.fasta.gz
+
+Duplicate Lectins removed: 4,703
+
+Total Preoteobacteria: 13,111,824
+
+Concatenated Proteobacteria and Gammaprotebacteria: 25,654,516
+
+added 3 controls
+
+Grand total: input = 25,654,519
+
+### Dataset Workflow:
+1. Download sets of sequeces from UniProt
+2. Tag each set of sequences based on their origin (Proteobacteria class or Gammaproteobacteria order) and concatenate into one fasta.gz
+  - `python tag_concat.py`
+3. Deduplicate (remove unreviewed lectins from dark query)
+  - `python deduplicate_lectins.py`
+4. **Optional:** Concatenate with other fasta.gz files
+  - `cat <1.fasta.gz> <2.fasta.gz> > concatenated.fasta.gz`
+5. **Highly Suggested:** Add controls to deduplicated fasta.gz
+  - `
+  - `gzip -c data/controls.fasta >> data/input_query_dedup.fasta.gz`
+6. Deduplicated fasta.gz are snakemake entry point
 
 # Acknowledgements and References
 All base work was reproduced from Durairaj et al. 2023.

@@ -37,7 +37,7 @@ rule representative_clustering:
 rule add_controls:
     input:
         rep_query = "data/query_rep50_rep_seq.fasta",
-        lectins = "data/lectins.fasta.gz"
+        lectins = "data/lectins/lectins.fasta.gz"
     output:
         combined = "data/query_all.fasta"
     shell:
@@ -86,21 +86,21 @@ rule community_detection:
         "scripts/community_detection.py"
 
 
-# --- Sequence Cosmograph ---
-rule seq_cosmograph:
-    input:
-        nodes = "results/clusters/seq_nodes.csv",
-        links = "results/clusters/seq_links.csv"
-    params:
-        project = "sequence_clusters"
-    output:
-        graph = "results/cosmograph/seq_clusters.done"
-    benchmark:
-        "results/benchmarks/seq_cosmopgraph.tsv"
-    conda:
-        "envs/cosmo.yaml"
-    script:
-        "scripts/seq_cosmograph.py"
+# --- Sequence Cosmograph --- # Perform this step manually, cosmograph's API seems to be broken
+#rule seq_cosmograph:
+#    input:
+#        nodes = "results/clusters/seq_nodes.csv",
+#        links = "results/clusters/seq_links.csv"
+#    params:
+#        project = "sequence_clusters"
+#    output:
+#        graph = "results/cosmograph/seq_clusters.done"
+#    benchmark:
+#        "results/benchmarks/seq_cosmopgraph.tsv"
+#    conda:
+#        "envs/cosmo.yaml"
+#    script:
+#        "scripts/seq_cosmograph.py"
 
 # ====================================================================== #
 #  <> Extenstion Section <>                                              #
@@ -154,18 +154,18 @@ rule detect_structure_clusters:
         "scripts/structure_clusters.py"
 
 
-# --- Structure Cosmograph ---
-rule structure_cosmograph:
-    input:
-        nodes = "results/clusters/structure_nodes.csv",
-        links = "results/clusters/structure_links.csv"
-    params:
-        project = "structure_clusters"
-    output:
-        graph = "results/cosmograph/structure_clusters.done"
-    conda:
-        "envs/cosmo.yaml"
-    benchmark:
-        "results/benchmarks/structure_cosmograph.tsv"
-    script:
-        "scripts/structure_cosmograph.py"
+# --- Structure Cosmograph --- # Perform this step manually, cosmograph's API seems to be broken
+#rule structure_cosmograph:
+#    input:
+#        nodes = "results/clusters/structure_nodes.csv",
+#        links = "results/clusters/structure_links.csv"
+#    params:
+#        project = "structure_clusters"
+#    output:
+#        graph = "results/cosmograph/structure_clusters.done"
+#    conda:
+#        "envs/cosmo.yaml"
+#    benchmark:
+#        "results/benchmarks/structure_cosmograph.tsv"
+#    script:
+#        "scripts/structure_cosmograph.py"

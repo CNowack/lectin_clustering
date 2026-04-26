@@ -1,5 +1,9 @@
 channels:
-  -defaults
+  - conda-forge
+  - defaults
 dependencies:
+  - python>=3.10
   - pandas
-  - cosmograph
+  - pip
+  - pip:
+    - cosmograph
