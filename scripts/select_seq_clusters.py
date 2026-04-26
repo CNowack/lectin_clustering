@@ -56,7 +56,7 @@ id_to_community = dict(zip(nodes["id"], nodes["community_group"]))
 # internal weight distribution.
 
 community_stats = (
-    nodes.assign(is_lectin=(nodes["category"] == LECTIN_LABEL))
+    nodes.assign(is_lectin=(nodes["source_set"] == LECTIN_LABEL))
     .groupby("community_group")
     .agg(size=("id", "count"), lectin_fraction=("is_lectin", "mean"))
 )
@@ -75,7 +75,7 @@ if len(known_clusters) == 0:
     raise ValueError(
         "No communities passed the known-lectin-cluster filters. "
         "Check `min_lectin_fraction`, `min_known_cluster_size`, and the "
-        "`category` column in your nodes file."
+        "`source_set` column in your nodes file."
     )
 
 # =============================================================================
@@ -126,7 +126,7 @@ print(
 # trimmed graph are directionally stored (we kept top-4 outbound per query),
 # but biologically the relationship is symmetric — count both directions.
 
-lectin_ids = set(nodes.loc[nodes["category"] == LECTIN_LABEL, "id"])
+lectin_ids = set(nodes.loc[nodes["source_set"] == LECTIN_LABEL, "id"])
 
 # Build candidate->cluster bridges from both edge directions.
 # Each entry: candidate_id -> {cluster_id: best_weight_seen}
@@ -188,7 +188,7 @@ candidates_df = pd.DataFrame(candidate_records)
 # Carry forward useful node metadata so downstream steps don't have to re-join.
 if not candidates_df.empty:
     candidates_df = candidates_df.merge(
-        nodes[["id", "community_group", "category", "type"]],
+        nodes[["id", "community_group", "source_set", "subset"]],
         on="id",
         how="left",
     )

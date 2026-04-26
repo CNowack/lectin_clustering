@@ -2,8 +2,8 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        "results/map_nodes.csv",
-        "results/map_links.csv"
+        "results/clusters/seq_hits.csv",
+        "results/clusters/select_clusters_summary.txt"
 
 # --- MMseqs2 Representative Consolidation ---
 # Cluster at 50% identity to collapse 12.7M to something more managable
@@ -112,8 +112,8 @@ rule select_clusters:
         nodes = "results/clusters/seq_nodes.csv",
         links = "results/clusters/seq_links.csv"
     output:
-        target_seq_clusters = "results/clusters/target_seq_clusters.csv"
-        summary = "results/clusters/select_clusters_summary.txt"
+        target_seq_clusters = "results/clusters/seq_hits.csv",
+        summary =             "results/clusters/select_clusters_summary.txt"
     conda:
         "envs/base.yaml"
     script:
