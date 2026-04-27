@@ -42,3 +42,8 @@ lectin_category_label: "lectin"
 # Minimum size of a community to be considered a "known lectin cluster".
 # Clusters of 1-2 members have no meaningful internal median.
 min_known_cluster_size: 3
+
+# Structure clustering step
+structure_min_score: 0.7
+structure_max_outbound_edges: 4
+structure_score_column: alntmscore

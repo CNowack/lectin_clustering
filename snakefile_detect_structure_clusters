@@ -2,20 +2,20 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        "results/structures_clusters/structure_nodes.csv",
+        "results/structure_clusters/structure_nodes.csv",
         "results/structure_clusters/structure_links.csv"
 
 
 # --- Detect Structural Clusters ---
 rule detect_structure_clusters:
     input:
-        data = "results/foldtree/structure_alignment.csv"
+        data = "results/foldtree_run/test_run/allvall_1.csv"
     output:
-        nodes = "results/structures_clusters/structure_nodes.csv",
+        nodes = "results/structure_clusters/structure_nodes.csv",
         links = "results/structure_clusters/structure_links.csv"
     benchmark:
         "results/benchmarks/detect_structure_clusters.tsv"
     conda:
-        "envs/base.yaml"
+        "envs/afdb_graph.yaml"
     script:
         "scripts/structure_clusters.py"
