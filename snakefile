@@ -3,7 +3,8 @@ configfile: "config.yaml"
 rule all:
     input:
         "results/clusters/seq_hits.csv",
-        "results/clusters/select_clusters_summary.txt"
+        "results/clusters/select_clusters_summary.txt",
+        "results/foldtree_input/identifiers.txt"
 
 # --- MMseqs2 Representative Consolidation ---
 # Cluster at 50% identity to collapse 12.7M to something more managable
@@ -85,23 +86,6 @@ rule community_detection:
     script:
         "scripts/community_detection.py"
 
-
-# --- Sequence Cosmograph --- # Perform this step manually, cosmograph's API seems to be broken
-#rule seq_cosmograph:
-#    input:
-#        nodes = "results/clusters/seq_nodes.csv",
-#        links = "results/clusters/seq_links.csv"
-#    params:
-#        project = "sequence_clusters"
-#    output:
-#        graph = "results/cosmograph/seq_clusters.done"
-#    benchmark:
-#        "results/benchmarks/seq_cosmopgraph.tsv"
-#    conda:
-#        "envs/cosmo.yaml"
-#    script:
-#        "scripts/seq_cosmograph.py"
-
 # ====================================================================== #
 #  <> Extenstion Section <>                                              #
 # ====================================================================== #
@@ -112,60 +96,27 @@ rule select_clusters:
         nodes = "results/clusters/seq_nodes.csv",
         links = "results/clusters/seq_links.csv"
     output:
-        target_seq_clusters = "results/clusters/seq_hits.csv",
-        summary =             "results/clusters/select_clusters_summary.txt"
+        target_seq_clusters     = "results/clusters/seq_hits.csv",
+        summary                 = "results/clusters/select_clusters_summary.txt",
+        subset_nodes            = "results/clusters/seq_subset_nodes.csv",
+        subset_links            = "results/clusters/seq_subset_links.csv",
+        strict_nodes            = "results/clusters/seq_strict_nodes.csv",
+        strict_links            = "results/clusters/seq_strict_links.csv"
     conda:
         "envs/base.yaml"
     script:
         "scripts/select_seq_clusters.py"
 
-# --- Fetch Structures? unclear if this step is needed ---
-
-# --- FoldTree Structural Clustering ---
-
-# need to downweight the sequence similarity parameter
-
-rule structural_clustering:
+rule build_foldtree_input:
     input:
-        target_seq_clusters = "results/clusters/target_seq_clusters.csv"
+        nodes = "results/clusters/seq_strict_nodes.csv"
     output:
-        data = "results/foldtree/structure_alignment.tsv"
-    conda:
-        "envs/foldtree.yaml"
-    benchmark:
-        "results/benchmarks/structural_clustering.tsv"
+        identifiers = "results/foldtree_input/identifiers.txt"
     shell:
         """
-        insert foldtree bash command here
+        mkdir -p results/foldtree_input
+        awk -F',' 'NR>1 {{split($1, a, "|"); print a[2]}}' {input.nodes} \
+            | sort -u \
+            > {output.identifiers}
         """
-
-# --- Detect Structural Clusters ---
-rule detect_structure_clusters:
-    input:
-        data = "results/foldtree/structure_alignment.csv"
-    output:
-        nodes = "results/clusters/structure_nodes.csv",
-        links = "results/clusters/structure_links.csv"
-    benchmark:
-        "results/benchmarks/detect_structure_clusters.tsv"
-    conda:
-        "envs/afdb_graph.yaml"
-    script:
-        "scripts/structure_clusters.py"
-
-
-# --- Structure Cosmograph --- # Perform this step manually, cosmograph's API seems to be broken
-#rule structure_cosmograph:
-#    input:
-#        nodes = "results/clusters/structure_nodes.csv",
-#        links = "results/clusters/structure_links.csv"
-#    params:
-#        project = "structure_clusters"
-#    output:
-#        graph = "results/cosmograph/structure_clusters.done"
-#    conda:
-#        "envs/cosmo.yaml"
-#    benchmark:
-#        "results/benchmarks/structure_cosmograph.tsv"
-#    script:
-#        "scripts/structure_cosmograph.py"
+    

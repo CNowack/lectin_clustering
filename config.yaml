@@ -9,9 +9,13 @@ input_fasta: "data/input_query_dedup.fasta.gz"
 mmseqs_evalue: 1e-4
 mmseqs_coverage: 0.5
 
+# select_seq_clusters parameters for KNN selection strategy
+knn_k_per_hop: [8, 4, 2]
+knn_min_weight: 0
+
 # SCC parameters
 max_threads: 36
-threads: 16
+threads: 36
 
 # this doesn't work
 # min(config["max_threads"], workflow.cores) # assigns each rule a lower number if smaller node is requested
@@ -20,7 +24,7 @@ threads: 16
 
 # Minimum fraction of lectin-labeled members required to call a community
 # a "known lectin cluster". 1.0 = pure lectin clusters only.
-min_lectin_fraction: 0.7
+min_lectin_fraction: 1.0
 
 # Minimum number of distinct known lectin clusters a candidate must bridge.
 # 1 = any unknown linked to a known lectin cluster at threshold strength.

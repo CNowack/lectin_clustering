@@ -27,6 +27,10 @@ nodes_in = snakemake.input.nodes
 links_in = snakemake.input.links
 candidates_out = snakemake.output.target_seq_clusters
 summary_out = snakemake.output.summary
+subset_nodes_out = snakemake.output.subset_nodes
+subset_links_out = snakemake.output.subset_links
+strict_nodes_out = snakemake.output.strict_nodes
+strict_links_out = snakemake.output.strict_links
 
 # Config-driven parameters
 MIN_LECTIN_FRACTION = snakemake.config["min_lectin_fraction"]
@@ -194,6 +198,90 @@ if not candidates_df.empty:
     )
 
 candidates_df.to_csv(candidates_out, index=False)
+
+# =============================================================================
+# 5c) EMIT STRICT SUBSET  (KNN expansion from hits)
+# =============================================================================
+# Build a focused FoldTree input by expanding outward from each candidate
+# hit through the strongest edges, with K decaying per hop. This gives each
+# hit enough phylogenetic context (nearby lectins + a few of their neighbors)
+# to be placed meaningfully in the structural tree, without dragging in the
+# whole graph.
+#
+# At each hop, every frontier node contributes its top-K incident edges by
+# weight (treating the graph as undirected — both source and target sides
+# count). New nodes are added to the kept set; only the newly-added nodes
+# expand on the next hop.
+
+# Config-driven knobs (with defaults if absent from config)
+KNN_K_PER_HOP = snakemake.config.get("knn_k_per_hop", [8, 4, 2])
+KNN_MIN_WEIGHT = snakemake.config.get("knn_min_weight", 0)
+
+print(
+    f"\nKNN expansion from {len(candidate_ids):,} hits: "
+    f"k_per_hop={KNN_K_PER_HOP}, min_weight={KNN_MIN_WEIGHT}"
+)
+
+# Build an undirected incident-edge index: node_id -> list of (weight, neighbor_id)
+# This lets us pull a node's top-K edges by sorting once per query node.
+# For a graph this size, a dict-of-lists is fine memory-wise and avoids the
+# overhead of repeated DataFrame filtering.
+incident_edges = defaultdict(list)
+for src, tgt, w in zip(links["source"], links["target"], links["weight"]):
+    if w < KNN_MIN_WEIGHT:
+        continue
+    incident_edges[src].append((w, tgt))
+    incident_edges[tgt].append((w, src))
+
+def top_k_neighbors(node_id, k):
+    """Return up to k neighbor IDs of node_id with the highest edge weights."""
+    edges = incident_edges.get(node_id, [])
+    if len(edges) <= k:
+        return [n for _, n in edges]
+    # nlargest is faster than full sort when k << len(edges)
+    return [n for _, n in sorted(edges, reverse=True)[:k]]
+
+# Expand
+kept = set(candidate_ids)
+frontier = set(candidate_ids)
+
+for hop_idx, k in enumerate(KNN_K_PER_HOP, start=1):
+    new_frontier = set()
+    for node in frontier:
+        for neighbor in top_k_neighbors(node, k):
+            if neighbor not in kept:
+                new_frontier.add(neighbor)
+    kept |= new_frontier
+    print(
+        f"  Hop {hop_idx} (k={k}): added {len(new_frontier):,} nodes, "
+        f"kept total {len(kept):,}"
+    )
+    if not new_frontier:
+        print(f"  Frontier empty after hop {hop_idx}, stopping early.")
+        break
+    frontier = new_frontier
+
+# Build the strict subset using the expanded node set
+strict_cluster_nodes = nodes[nodes["id"].isin(kept)].copy()
+strict_cluster_ids = set(strict_cluster_nodes["id"])
+
+strict_cluster_links = links.loc[
+    links["source"].isin(strict_cluster_ids) & links["target"].isin(strict_cluster_ids),
+    ["source", "target", "weight"],
+].copy()
+
+strict_cluster_nodes.to_csv(strict_nodes_out, index=False)
+strict_cluster_links.to_csv(strict_links_out, index=False)
+
+n_hits_kept = strict_cluster_nodes["id"].isin(candidate_ids).sum()
+n_lectins_kept = strict_cluster_nodes["id"].isin(lectin_ids).sum()
+n_other_kept = len(strict_cluster_nodes) - n_hits_kept - n_lectins_kept
+print(
+    f"Strict subset: {len(strict_cluster_nodes):,} nodes "
+    f"({n_hits_kept:,} hits, {n_lectins_kept:,} lectins, "
+    f"{n_other_kept:,} other dark proteins), "
+    f"{len(strict_cluster_links):,} edges"
+)
 
 # =============================================================================
 # 6) SUMMARY — for sanity-checking thresholds before structural clustering
