@@ -199,6 +199,33 @@ if not candidates_df.empty:
 
 candidates_df.to_csv(candidates_out, index=False)
 
+# Set of hit IDs — used by the KNN expansion below as seeds.
+candidate_ids = set(candidates_df["id"]) if not candidates_df.empty else set()
+
+# =============================================================================
+# 5b) EMIT SUBSET NODES + LINKS  (lectins + hits only)
+# =============================================================================
+
+candidate_ids = set(candidates_df["id"]) if not candidates_df.empty else set()
+keep_ids = lectin_ids | candidate_ids
+
+subset_nodes = nodes[nodes["id"].isin(keep_ids)].copy()
+
+subset_links = links.loc[
+    links["source"].isin(keep_ids) & links["target"].isin(keep_ids),
+    ["source", "target", "weight"],
+].copy()
+
+subset_nodes.to_csv(subset_nodes_out, index=False)
+subset_links.to_csv(subset_links_out, index=False)
+
+print(
+    f"Subset graph: {len(subset_nodes):,} nodes "
+    f"({len(lectin_ids & set(subset_nodes['id'])):,} lectins, "
+    f"{len(candidate_ids):,} hits), "
+    f"{len(subset_links):,} edges"
+)
+
 # =============================================================================
 # 5c) EMIT STRICT SUBSET  (KNN expansion from hits)
 # =============================================================================

@@ -15,7 +15,7 @@ knn_min_weight: 0
 
 # SCC parameters
 max_threads: 36
-threads: 36
+threads: 16
 
 # this doesn't work
 # min(config["max_threads"], workflow.cores) # assigns each rule a lower number if smaller node is requested
@@ -24,7 +24,7 @@ threads: 36
 
 # Minimum fraction of lectin-labeled members required to call a community
 # a "known lectin cluster". 1.0 = pure lectin clusters only.
-min_lectin_fraction: 1.0
+min_lectin_fraction: 0.7
 
 # Minimum number of distinct known lectin clusters a candidate must bridge.
 # 1 = any unknown linked to a known lectin cluster at threshold strength.
@@ -34,7 +34,7 @@ min_bridge_count: 1
 # Multiplier on each cluster's median within-cluster edge weight to set its
 # admission threshold. 1.0 = exactly median (paper). >1.0 = stricter (require
 # stronger-than-median similarity). <1.0 = more permissive.
-weight_strictness_multiplier: 0.5
+weight_strictness_multiplier: 1.5
 
 # Label that identifies known lectins in the nodes 'category' column.
 lectin_category_label: "lectin"

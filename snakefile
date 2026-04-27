@@ -7,7 +7,7 @@ rule all:
         "results/foldtree_input/identifiers.txt"
 
 # --- MMseqs2 Representative Consolidation ---
-# Cluster at 50% identity to collapse 12.7M to something more managable
+# Cluster at 50% identity to collapse the total space to something more managable
 
 rule representative_clustering:
     input:
