@@ -4,7 +4,8 @@ rule all:
     input:
         "results/clusters/seq_hits.csv",
         "results/clusters/select_clusters_summary.txt",
-        "results/foldtree_input/identifiers.txt"
+        "results/foldtree_input/identifiers.txt",
+        "results/foldtree/structure_alignment.csv"
 
 # --- MMseqs2 Representative Consolidation ---
 # Cluster at 50% identity to collapse the total space to something more managable
@@ -32,25 +33,11 @@ rule representative_clustering:
         rm -rf data/temp_cluster50
         """
 
-# --- Add Labeled Controls ---
-# Concat the labeled lectins onto the representative sequences fasta
-
-rule add_controls:
-    input:
-        rep_query = "data/query_rep50_rep_seq.fasta",
-        lectins = "data/lectins/lectins.fasta.gz"
-    output:
-        combined = "data/query_all.fasta"
-    shell:
-        """
-        cat {input.rep_query} <(gunzip -c {input.lectins}) > {output.combined}
-        """
-
 # --- MMseq2 Clustering ---
 # All-vs-All alignment
 rule sequence_clustering:
     input:
-        query = "data/query_all.fasta"
+        query = "data/query_rep50_rep_seq.fasta"
     output:
         clusters = "results/all_vs_all_alignment.tsv"
     benchmark:
@@ -109,14 +96,32 @@ rule select_clusters:
 
 rule build_foldtree_input:
     input:
-        nodes = "results/clusters/seq_strict_nodes.csv"
+        nodes = "results/clusters/seq_nodes.csv"
     output:
         identifiers = "results/foldtree_input/identifiers.txt"
     shell:
         """
         mkdir -p results/foldtree_input
-        awk -F',' 'NR>1 {{split($1, a, "|"); print a[2]}}' {input.nodes} \
-            | sort -u \
-            > {output.identifiers}
+        awk -F',' 'NR>1 {{print $NF}}' {input.nodes} | sort -u > {output.identifiers}
         """
-    
+
+# --- Foldtree v1 Structure Alignment ---
+rule foldtree:
+    input:
+        folder = "results/foldtree_input"
+    output:
+        alignment = "results/foldtree/structure_alignment.csv"
+    params:
+        outdir = "results/foldtree"
+    benchmark:
+        "results/benchmarks/foldtree.tsv"
+    conda:
+        "envs/foldtree.yaml"
+    threads: config["threads"]
+    shell:
+        """
+        mkdir -p {params.outdir}
+        foldtree \
+            --folder {input.folder} \
+            --cores {threads}
+        """

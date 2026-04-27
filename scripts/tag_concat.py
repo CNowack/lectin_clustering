@@ -50,24 +50,28 @@ INPUTS = {
     # "data/by_order/xanthomonadales.fasta.gz":       "dark_xantho",
 
     # Dark pool - Extended - All other Proteobacteria classes
-    "data/proteobacteria/acidithiobacillia.fasta.gz":           "dark_p-acidi",
-    "data/proteobacteria/alphaproteobacteria.fasta.gz":         "dark_p-alpha",
-    "data/proteobacteria/betaproteobacteria.fasta.gz":          "dark_p-beta",
-    "data/proteobacteria/deltaproteobacteria.fasta.gz":         "dark_p-delta",
-    "data/proteobacteria/environmental.fasta.gz":               "dark_p-env",
-    "data/proteobacteria/epsilonproteobacteria.fasta.gz":       "dark_p-epsilon",
-    "data/proteobacteria/hydrogenophilalia.fasta.gz":           "dark_p-hydro",
-    "data/proteobacteria/incertae_sedis.fasta.gz":              "dark_p-incertae",
-    "data/proteobacteria/lambdaproteobacteria.fasta.gz":        "dark_p-lambda",
-    "data/proteobacteria/magnetococcia.fasta.gz":               "dark_p-magneto",
-    "data/proteobacteria/muproteobacteria.fasta.gz":            "dark_p-mu",
-    "data/proteobacteria/oligoflexia.fasta.gz":                 "dark_p-oligo",
-    "data/proteobacteria/unclassified.fasta.gz":                "dark_p-unclass",
-    "data/proteobacteria/zetaproteobacteria.fasta.gz":          "dark_p-zeta"
+    # "data/proteobacteria/acidithiobacillia.fasta.gz":           "dark_p-acidi",
+    # "data/proteobacteria/alphaproteobacteria.fasta.gz":         "dark_p-alpha",
+    # "data/proteobacteria/betaproteobacteria.fasta.gz":          "dark_p-beta",
+    # "data/proteobacteria/deltaproteobacteria.fasta.gz":         "dark_p-delta",
+    # "data/proteobacteria/environmental.fasta.gz":               "dark_p-env",
+    # "data/proteobacteria/epsilonproteobacteria.fasta.gz":       "dark_p-epsilon",
+    # "data/proteobacteria/hydrogenophilalia.fasta.gz":           "dark_p-hydro",
+    # "data/proteobacteria/incertae_sedis.fasta.gz":              "dark_p-incertae",
+    # "data/proteobacteria/lambdaproteobacteria.fasta.gz":        "dark_p-lambda",
+    # "data/proteobacteria/magnetococcia.fasta.gz":               "dark_p-magneto",
+    # "data/proteobacteria/muproteobacteria.fasta.gz":            "dark_p-mu",
+    # "data/proteobacteria/oligoflexia.fasta.gz":                 "dark_p-oligo",
+    # "data/proteobacteria/unclassified.fasta.gz":                "dark_p-unclass",
+    # "data/proteobacteria/zetaproteobacteria.fasta.gz":          "dark_p-zeta",
+    "data/ig.fasta":          "ig",
+    "data/lectins.fasta":          "lectin",
+    "data/kinases.fasta":          "kinases",
+    "data/ribosomal.fasta":          "ribosomal",
 
 }
 
-OUTPUT_PATH = "data/proteo_query.fasta.gz"
+OUTPUT_PATH = "data/combined.fasta"
 
 
 # =============================================================================
@@ -98,7 +102,8 @@ def tag_and_write(input_path: str, tag: str, out_handle) -> int:
                 # Insert tag right after the '>'. The '_' separator is a
                 # safe choice since UniProt IDs use '|' but never '_' at
                 # the start.
-                out_handle.write(f">{tag}_{line[1:]}".encode("utf-8"))
+                sp = line.split('|')
+                out_handle.write(f">{sp[0].removeprefix('>')}|{tag}_{sp[1]}|{'|'.join(sp[2:])}".encode("utf-8"))
                 n_seqs += 1
             else:
                 out_handle.write(line.encode("utf-8"))
@@ -113,7 +118,7 @@ def main() -> None:
     total_seqs = 0
     per_file_counts: dict[str, int] = {}
 
-    with gzip.open(out_path, "wb") as out:
+    with open(out_path, "wb") as out:
         for input_path, tag in INPUTS.items():
             if not Path(input_path).exists():
                 print(f"  SKIP   {input_path}: file not found", file=sys.stderr)
